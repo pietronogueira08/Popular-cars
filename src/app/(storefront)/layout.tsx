@@ -1,4 +1,5 @@
 import { WhatsAppFAB } from "@/components/WhatsAppFAB";
+import { BottomNav } from "@/components/BottomNav";
 
 export default function StorefrontLayout({
   children,
@@ -9,6 +10,7 @@ export default function StorefrontLayout({
     <>
       {children}
       <WhatsAppFAB />
+      <BottomNav />
     </>
   );
 }

@@ -121,7 +121,18 @@ export function TestimonialCarousel() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -60 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="bg-[#141414] rounded-2xl p-8 border border-[#2A2A2A] relative"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = Math.abs(offset.x) * velocity.x;
+                if (swipe < -10000) {
+                  next();
+                } else if (swipe > 10000) {
+                  prev();
+                }
+              }}
+              className="bg-[#141414] rounded-2xl p-8 border border-[#2A2A2A] relative touch-pan-y"
             >
               {/* Quote mark */}
               <div className="absolute top-6 right-8 text-[#FFD700]/10 font-heading font-black text-8xl leading-none select-none">

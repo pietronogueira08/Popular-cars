@@ -221,6 +221,7 @@ input, select, textarea {
   outline: none;
   transition: border-color 0.2s;
   width: 100%;
+  font-size: 16px; /* Prevents iOS auto-zoom */
 }
 
 input:focus, select:focus, textarea:focus {

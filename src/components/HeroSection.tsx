@@ -17,8 +17,8 @@ export function HeroSection() {
   const line2Ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    // Parallax on hero bg
-    if (bgRef.current) {
+    // Parallax on hero bg - Desktop only to save battery/performance
+    if (bgRef.current && window.innerWidth >= 768) {
       gsap.to(bgRef.current, {
         yPercent: 30,
         ease: "none",
@@ -162,7 +162,7 @@ export function HeroSection() {
             <button
               id="hero-cta-estoque"
               onClick={scrollToInventory}
-              className="group relative inline-flex items-center justify-center gap-3 bg-[#FFD700] text-[#0A0A0A] font-heading font-bold text-base px-8 py-4 rounded-full overflow-hidden transition-all duration-300 hover:bg-[#E6C200] hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(255,215,0,0.3)]"
+              className="group relative inline-flex items-center justify-center gap-3 bg-[#FFD700] text-[#0A0A0A] font-heading font-bold text-base px-8 py-4 min-h-[44px] min-w-[44px] rounded-full overflow-hidden transition-all duration-300 hover:bg-[#E6C200] hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(255,215,0,0.3)]"
             >
               <span className="relative z-10">Ver Estoque Exclusivo</span>
               <ChevronDown className="relative z-10 w-5 h-5 group-hover:animate-bounce" />
@@ -174,7 +174,7 @@ export function HeroSection() {
                   .getElementById("avaliacao")
                   ?.scrollIntoView({ behavior: "smooth" })
               }
-              className="inline-flex items-center justify-center gap-2 border border-[#FFD700]/40 text-[#FFD700] font-heading font-semibold text-base px-8 py-4 rounded-full transition-all duration-300 hover:bg-[#FFD700]/10 hover:border-[#FFD700]"
+              className="inline-flex items-center justify-center gap-2 border border-[#FFD700]/40 text-[#FFD700] font-heading font-semibold text-base px-8 py-4 min-h-[44px] min-w-[44px] rounded-full transition-all duration-300 hover:bg-[#FFD700]/10 hover:border-[#FFD700]"
             >
               Avaliar Meu Veículo
             </button>

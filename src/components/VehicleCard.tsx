@@ -144,7 +144,7 @@ export function VehicleCard({ vehicle, index = 0 }: VehicleCardProps) {
             disabled={vehicle.status === "vendido"}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 bg-[#FFD700] text-[#0A0A0A] font-heading font-bold text-sm px-4 py-2.5 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#E6C200] shadow-[0_4px_15px_rgba(255,215,0,0.3)]"
+            className="flex items-center justify-center gap-2 bg-[#FFD700] text-[#0A0A0A] font-heading font-bold text-sm px-4 py-2.5 min-h-[44px] min-w-[44px] rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#E6C200] shadow-[0_4px_15px_rgba(255,215,0,0.3)]"
           >
             Tenho Interesse
             <ChevronRight className="w-4 h-4" />

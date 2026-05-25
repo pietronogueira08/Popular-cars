@@ -74,7 +74,7 @@ export function VehicleGrid() {
             </span>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 border border-[#2A2A2A] text-[#E0E0E0] px-4 py-2 rounded-lg text-sm font-body hover:border-[#FFD700]/40 transition-colors"
+              className="flex items-center justify-center gap-2 border border-[#2A2A2A] text-[#E0E0E0] px-4 py-2 min-h-[44px] rounded-lg text-sm font-body hover:border-[#FFD700]/40 transition-colors"
             >
               {showFilters ? (
                 <X className="w-4 h-4" />
@@ -100,12 +100,12 @@ export function VehicleGrid() {
                 <p className="text-[#6B6B6B] text-xs uppercase tracking-widest font-body mb-3">
                   Faixa de Preço
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-nowrap overflow-x-auto snap-x scroll-smooth pb-4 hide-scrollbar gap-2">
                   {priceRanges.map((range, i) => (
                     <button
                       key={range.label}
                       onClick={() => setPriceRange(i)}
-                      className={`text-sm font-body px-4 py-2 rounded-full border transition-all ${
+                      className={`text-sm font-body px-4 py-2 min-h-[44px] whitespace-nowrap snap-start rounded-full border transition-all ${
                         priceRange === i
                           ? "filter-btn-active border-[#FFD700]"
                           : "border-[#2A2A2A] text-[#E0E0E0] hover:border-[#FFD700]/40"
@@ -121,13 +121,13 @@ export function VehicleGrid() {
         </AnimatePresence>
 
         {/* Category tabs */}
-        <div className="flex flex-wrap gap-3 mb-10">
+        <div className="flex flex-nowrap overflow-x-auto snap-x scroll-smooth pb-4 mb-6 hide-scrollbar gap-3">
           {filters.map((f) => (
             <button
               key={f.value}
               id={`filter-${f.value}`}
               onClick={() => handleFilterChange(f.value)}
-              className={`flex items-center gap-2 text-sm font-heading font-semibold px-5 py-2.5 rounded-full border transition-all duration-200 ${
+              className={`flex items-center justify-center gap-2 text-sm font-heading font-semibold px-5 py-2.5 min-h-[44px] whitespace-nowrap snap-start rounded-full border transition-all duration-200 ${
                 activeFilter === f.value
                   ? "filter-btn-active border-[#FFD700]"
                   : "border-[#2A2A2A] text-[#E0E0E0] hover:border-[#FFD700]/40 hover:text-[#FFD700]"

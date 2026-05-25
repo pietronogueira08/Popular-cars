@@ -18,7 +18,7 @@ export function WhatsAppFAB() {
       transition={{ type: "spring", stiffness: 260, damping: 20, delay: 2 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#FFD700] flex items-center justify-center shadow-[0_4px_20px_rgba(255,215,0,0.4)] animate-pulse-glow"
+      className="fixed bottom-24 md:bottom-8 right-6 z-50 w-14 h-14 rounded-full bg-[#FFD700] flex items-center justify-center shadow-[0_4px_20px_rgba(255,215,0,0.4)] animate-pulse-glow"
     >
       {/* WhatsApp SVG icon */}
       <svg
