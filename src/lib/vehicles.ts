@@ -1,0 +1,181 @@
+import { Vehicle } from '@/types/vehicle'
+
+export const WHATSAPP_NUMBER = '5511999999999'
+
+export const vehicles: Vehicle[] = [
+  {
+    id: '1',
+    slug: 'hyundai-ix35-2020',
+    brand: 'Hyundai',
+    model: 'ix35 2.0 Flex Automático',
+    year: 2020,
+    price: 89900,
+    mileage: 52000,
+    category: 'carro',
+    status: 'disponivel',
+    description: 'Excelente estado, revisado, com garantia de motor e câmbio. Ideal para troca! SUV completo com teto solar, bancos em couro e central multimídia.',
+    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80',
+    features: ['Teto Solar', 'Bancos de Couro', 'Multimídia', 'Câmera de Ré', 'Sensor de Estacionamento'],
+    highlighted: true,
+    color: 'Prata',
+    fuel: 'Flex',
+  },
+  {
+    id: '2',
+    slug: 'honda-africa-twin-2023',
+    brand: 'Honda',
+    model: 'Africa Twin CRF1100L',
+    year: 2023,
+    price: 79900,
+    mileage: 8000,
+    category: 'moto',
+    status: 'disponivel',
+    description: 'A lendária Africa Twin em excelente estado, com todos os revisões em dia. Semi-nova, com garantia de fábrica ainda válida.',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    features: ['DCT', 'Controle de Tração', 'ABS', 'Modos de Condução', 'GPS Integrado'],
+    highlighted: true,
+    color: 'Tricolor',
+    fuel: 'Gasolina',
+  },
+  {
+    id: '3',
+    slug: 'honda-cb1000r-2022',
+    brand: 'Honda',
+    model: 'CB1000R Black Edition',
+    year: 2022,
+    price: 69900,
+    mileage: 15000,
+    category: 'moto',
+    status: 'disponivel',
+    description: 'Naked esportiva de alto desempenho. Design agressivo, motor potente e tecnologia de ponta. Uma moto para quem não aceita menos que o melhor.',
+    image: 'https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=800&q=80',
+    features: ['Quickshifter', 'ABS Cornering', 'Controle de Tração', 'Freio de Emergência', 'Modo Sport/Standard/Rain'],
+    highlighted: true,
+    color: 'Preto Fosco',
+    fuel: 'Gasolina',
+  },
+  {
+    id: '4',
+    slug: 'vw-gol-ap18-forjado-stage2',
+    brand: 'Volkswagen',
+    model: 'Gol AP 1.8 Forjado',
+    year: 1994,
+    price: 45000,
+    mileage: 180000,
+    category: 'tuning',
+    stage: 'Stage 2',
+    status: 'disponivel',
+    description: 'Motor AP 1.8 completamente forjado Stage 2. Pistões Mahle forjados, bielas reforçadas, virabrequim equilibrado, cabeçote preparado com comando Schrick. Mais de 200cv na roda.',
+    image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80',
+    features: ['Motor Forjado', 'Comando Schrick', 'Carburação Weber', 'Suspensão Coilover', 'Freios Perfurados'],
+    color: 'Preto Fosco',
+    fuel: 'Álcool',
+  },
+  {
+    id: '5',
+    slug: 'vw-golf-gti-stage1',
+    brand: 'Volkswagen',
+    model: 'Golf GTI Mk7 Stage 1',
+    year: 2017,
+    price: 98000,
+    mileage: 72000,
+    category: 'tuning',
+    stage: 'Stage 1',
+    status: 'disponivel',
+    description: 'Golf GTI com reprogramação de fábrica Stage 1, extraindo mais 50cv do motor 2.0 TSI. Potência: 280cv. Suspensão ajustada, escapamento de esporte.',
+    image: 'https://images.unsplash.com/photo-1541443131876-6d3f03b28f40?w=800&q=80',
+    features: ['Remap Stage 1', 'Escapamento Sport', 'Suspensão Ajustada', 'LSD', 'Rodas 19"'],
+    color: 'Branco Puro',
+    fuel: 'Gasolina',
+  },
+  {
+    id: '6',
+    slug: 'toyota-hilux-2021',
+    brand: 'Toyota',
+    model: 'Hilux SRX 2.8 TDI 4x4',
+    year: 2021,
+    price: 189900,
+    mileage: 38000,
+    category: 'carro',
+    status: 'disponivel',
+    description: 'A lenda da robustez. Hilux SRX completa, automática, 4x4. Perfeita para trabalho e aventura. Revisões todas feitas na concessionária Toyota.',
+    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80',
+    features: ['4x4 Automático', 'Teto Solar', 'Couro', 'Multimídia 8"', 'Android Auto / CarPlay'],
+    highlighted: false,
+    color: 'Branco Pérola',
+    fuel: 'Diesel',
+  },
+  {
+    id: '7',
+    slug: 'yamaha-mt09-2023',
+    brand: 'Yamaha',
+    model: 'MT-09 SP',
+    year: 2023,
+    price: 62500,
+    mileage: 5000,
+    category: 'moto',
+    status: 'disponivel',
+    description: 'A moto mais empolgante da categoria! Com suspensão Öhlins de série e motor tricilíndrico de 119cv, a MT-09 SP entrega performance inigualável.',
+    image: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=800&q=80',
+    features: ['Suspensão Öhlins', 'QuickShifter', 'Traction Control', 'ABS', '6 Modos de Condução'],
+    color: 'Azul / Prata',
+    fuel: 'Gasolina',
+  },
+  {
+    id: '8',
+    slug: 'vw-polo-gts-2022',
+    brand: 'Volkswagen',
+    model: 'Polo GTS 1.4 TSI',
+    year: 2022,
+    price: 99990,
+    mileage: 24000,
+    category: 'carro',
+    status: 'reservado',
+    description: 'Polo GTS top de linha. O hatch esportivo mais completo do segmento com motor 1.4 TSI de 150cv e câmbio DSG de 7 marchas.',
+    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80',
+    features: ['Motor TSI 150cv', 'DSG 7 Marchas', 'Faróis Full LED', 'Keyless', 'Head-Up Display'],
+    color: 'Vermelho Flash',
+    fuel: 'Gasolina',
+  },
+  {
+    id: '9',
+    slug: 'ford-ranger-raptor-stage3',
+    brand: 'Ford',
+    model: 'Ranger Raptor Stage 3',
+    year: 2019,
+    price: 210000,
+    mileage: 55000,
+    category: 'tuning',
+    stage: 'Stage 3',
+    status: 'disponivel',
+    description: 'Ranger Raptor com preparação Stage 3 completa. Motor 2.0 Biturbo remapeado, suspensão long travel, diferencial off-road. A mais extrema do Brasil.',
+    image: 'https://images.unsplash.com/photo-1630744684491-04aaa76bcede?w=800&q=80',
+    features: ['Remap Stage 3', 'Suspensão Long Travel', 'Snorkel', 'Diferencial Bloqueado', 'Pneus BFGoodrich'],
+    color: 'Laranja',
+    fuel: 'Diesel',
+  },
+]
+
+export const getVehiclesByCategory = (category: VehicleCategory | 'todos') => {
+  if (category === 'todos') return vehicles
+  return vehicles.filter(v => v.category === category)
+}
+
+export const getVehicleBySlug = (slug: string) => {
+  return vehicles.find(v => v.slug === slug)
+}
+
+export const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price)
+}
+
+export const formatMileage = (km: number): string => {
+  return new Intl.NumberFormat('pt-BR').format(km) + ' km'
+}
+
+import type { VehicleCategory } from '@/types/vehicle'
