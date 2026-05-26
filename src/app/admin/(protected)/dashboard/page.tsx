@@ -10,6 +10,7 @@ import Image from "next/image";
 import { formatPrice, formatMileage } from "@/lib/vehicles";
 import { useVehicles } from "@/context/VehicleContext";
 import { Vehicle, VehicleStatus, VehicleCategory } from "@/types/vehicle";
+import { createClient } from "@/utils/supabase/client";
 
 // ─────────────────────────────────────────────
 // Types & helpers
@@ -60,7 +61,7 @@ function readFileAsDataURL(file: File): Promise<string> {
 // ─────────────────────────────────────────────
 interface ImageUploadProps {
   value: string;
-  onChange: (url: string) => void;
+  onChange: (url: string, file?: File) => void;
 }
 
 function ImageUpload({ value, onChange }: ImageUploadProps) {
@@ -80,7 +81,7 @@ function ImageUpload({ value, onChange }: ImageUploadProps) {
       setProcessing(true);
       try {
         const dataUrl = await readFileAsDataURL(file);
-        onChange(dataUrl);
+        onChange(dataUrl, file);
       } finally {
         setProcessing(false);
       }
@@ -211,9 +212,11 @@ export default function AdminDashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [formData, setFormData] = useState<EditableVehicle>(emptyVehicle);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [featuresInput, setFeaturesInput] = useState("");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Filter
   const filtered = vehicleList.filter(
@@ -226,6 +229,7 @@ export default function AdminDashboardPage() {
   const openCreate = () => {
     setEditingVehicle(null);
     setFormData(emptyVehicle);
+    setImageFile(null);
     setFeaturesInput("");
     setModalOpen(true);
     setSaved(false);
@@ -250,12 +254,14 @@ export default function AdminDashboardPage() {
       highlighted: v.highlighted,
     });
     setFeaturesInput(v.features.join(", "));
+    setImageFile(null);
     setModalOpen(true);
     setSaved(false);
   };
 
   // Save — writes to the shared context (which also updates the storefront)
-  const saveVehicle = () => {
+  const saveVehicle = async () => {
+    setSaving(true);
     const features = featuresInput
       .split(",")
       .map((f) => f.trim())
@@ -266,18 +272,40 @@ export default function AdminDashboardPage() {
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
+    let imageUrl = formData.image;
+
+    // Upload new image if selected
+    if (imageFile) {
+      const supabase = createClient();
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from('vehicle-images')
+        .upload(fileName, imageFile);
+
+      if (!uploadError) {
+        const { data } = supabase.storage
+          .from('vehicle-images')
+          .getPublicUrl(fileName);
+        imageUrl = data.publicUrl;
+      } else {
+        console.error("Erro no upload da imagem:", uploadError);
+      }
+    }
+
     if (editingVehicle) {
-      updateVehicle({ ...editingVehicle, ...formData, features, slug });
+      await updateVehicle(editingVehicle.id, { ...formData, features, slug, image: imageUrl });
     } else {
-      const newVehicle: Vehicle = {
-        id: Date.now().toString(),
+      const newVehicle = {
         slug,
         ...formData,
         features,
+        image: imageUrl,
       };
-      addVehicle(newVehicle);
+      await addVehicle(newVehicle);
     }
 
+    setSaving(false);
     setSaved(true);
     setTimeout(() => {
       setModalOpen(false);
@@ -580,7 +608,10 @@ export default function AdminDashboardPage() {
                   </label>
                   <ImageUpload
                     value={formData.image}
-                    onChange={(url) => setFormData({ ...formData, image: url })}
+                    onChange={(url, file) => {
+                      setFormData({ ...formData, image: url });
+                      if (file) setImageFile(file);
+                    }}
                   />
                 </div>
 
@@ -750,13 +781,16 @@ export default function AdminDashboardPage() {
                     onClick={saveVehicle}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`flex-1 py-3 rounded-xl font-heading font-bold transition-all flex items-center justify-center gap-2 ${
+                    disabled={saving}
+                    className={`flex-1 py-3 rounded-xl font-heading font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-60 ${
                       saved
                         ? "bg-[#22C55E] text-white"
                         : "bg-[#FFD700] text-[#0A0A0A] hover:bg-[#E6C200] shadow-[0_4px_15px_rgba(255,215,0,0.3)]"
                     }`}
                   >
-                    {saved ? (
+                    {saving ? (
+                      <div className="w-5 h-5 border-2 border-[#0A0A0A]/30 border-t-[#0A0A0A] rounded-full animate-spin" />
+                    ) : saved ? (
                       <>
                         <Check className="w-4 h-4" />
                         Salvo!

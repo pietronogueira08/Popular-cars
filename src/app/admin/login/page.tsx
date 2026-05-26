@@ -1,19 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
+import { createClient } from "@/utils/supabase/client";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { credentials, isLoaded } = useAuthContext();
-  const [username, setUsername] = useState("");
+  const { user, isLoaded } = useAuthContext();
+  const supabase = createClient();
+  
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isLoaded && user) {
+      router.push("/admin/dashboard");
+    }
+  }, [isLoaded, user, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,23 +33,35 @@ export default function AdminLoginPage() {
 
     setIsLoading(true);
 
-    // Simulate network delay
-    await new Promise((r) => setTimeout(r, 800));
-
-    if (!username.trim() || !password.trim()) {
+    if (!email.trim() || !password.trim()) {
       setError("Por favor, preencha todos os campos.");
       setIsLoading(false);
       return;
     }
 
-    if (username === credentials.username && password === credentials.passwordHash) {
-      sessionStorage.setItem("pv-admin-auth", "true");
-      router.push("/admin/dashboard");
-    } else {
-      setError("Usuário ou senha incorretos.");
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      setError(signInError.message === "Invalid login credentials" 
+        ? "E-mail ou senha incorretos." 
+        : signInError.message);
       setIsLoading(false);
+    } else {
+      // The auth listener in AuthContext will detect the session change
+      router.push("/admin/dashboard");
     }
   };
+
+  if (!isLoaded || user) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#FFD700]/30 border-t-[#FFD700] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-4">
@@ -71,20 +93,20 @@ export default function AdminLoginPage() {
           <form id="admin-login-form" onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="text-[#6B6B6B] text-xs font-body mb-2 block uppercase tracking-wider">
-                Usuário
+                E-mail de Acesso
               </label>
               <input
-                id="admin-username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ex: admin"
+                id="admin-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Ex: admin@loja.com"
               />
             </div>
 
             <div>
               <label className="text-[#6B6B6B] text-xs font-body mb-2 block uppercase tracking-wider">
-                Senha de Acesso
+                Senha
               </label>
               <div className="relative">
                 <input
@@ -92,7 +114,7 @@ export default function AdminLoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Sua senha"
+                  placeholder="Sua senha secreta"
                   className="pr-12"
                 />
                 <button
@@ -142,4 +164,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-

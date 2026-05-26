@@ -3,96 +3,103 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useState,
+  useEffect,
   ReactNode,
-  useCallback,
 } from "react";
 import { Vehicle } from "@/types/vehicle";
-import { vehicles as mockVehicles } from "@/lib/vehicles";
+import { createClient } from "@/utils/supabase/client";
 
-// ─────────────────────────────────────────────
-// Context shape
-// ─────────────────────────────────────────────
-interface VehicleContextValue {
+interface VehicleContextType {
   vehicles: Vehicle[];
   isLoaded: boolean;
-  addVehicle: (v: Vehicle) => void;
-  updateVehicle: (v: Vehicle) => void;
-  deleteVehicle: (id: string) => void;
-  resetToMock: () => void;
+  addVehicle: (v: Omit<Vehicle, "id">) => Promise<void>;
+  updateVehicle: (id: string, v: Partial<Vehicle>) => Promise<void>;
+  deleteVehicle: (id: string) => Promise<void>;
+  refreshVehicles: () => Promise<void>;
 }
 
-const VehicleContext = createContext<VehicleContextValue | null>(null);
+const VehicleContext = createContext<VehicleContextType | undefined>(undefined);
 
-const STORAGE_KEY = "pv-vehicles-v1";
-
-// ─────────────────────────────────────────────
-// Provider
-// ─────────────────────────────────────────────
 export function VehicleProvider({ children }: { children: ReactNode }) {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const supabase = createClient();
 
-  // Load from localStorage (or fallback to mock data)
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Vehicle[];
-        setVehicles(parsed);
-      } else {
-        setVehicles(mockVehicles);
-      }
-    } catch {
-      setVehicles(mockVehicles);
-    } finally {
-      setIsLoaded(true);
+  const fetchVehicles = async () => {
+    const { data, error } = await supabase
+      .from("vehicles")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setVehicles(data as Vehicle[]);
     }
-  }, []);
+    setIsLoaded(true);
+  };
 
-  // Persist to localStorage whenever vehicles change (after hydration)
   useEffect(() => {
-    if (!isLoaded) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles));
-    } catch (err) {
-      // Quota exceeded — e.g. too many base64 images
-      console.warn("localStorage quota exceeded, some images may not persist.", err);
+    fetchVehicles();
+  }, []);
+
+  const addVehicle = async (vehicle: Omit<Vehicle, "id">) => {
+    const { data, error } = await supabase
+      .from("vehicles")
+      .insert([vehicle])
+      .select()
+      .single();
+
+    if (!error && data) {
+      setVehicles((prev) => [data as Vehicle, ...prev]);
+    } else {
+      console.error("Error adding vehicle:", error);
     }
-  }, [vehicles, isLoaded]);
+  };
 
-  const addVehicle = useCallback((v: Vehicle) => {
-    setVehicles((prev) => [v, ...prev]);
-  }, []);
+  const updateVehicle = async (id: string, updates: Partial<Vehicle>) => {
+    const { data, error } = await supabase
+      .from("vehicles")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
 
-  const updateVehicle = useCallback((v: Vehicle) => {
-    setVehicles((prev) => prev.map((existing) => (existing.id === v.id ? v : existing)));
-  }, []);
+    if (!error && data) {
+      setVehicles((prev) => prev.map((v) => (v.id === id ? (data as Vehicle) : v)));
+    } else {
+      console.error("Error updating vehicle:", error);
+    }
+  };
 
-  const deleteVehicle = useCallback((id: string) => {
-    setVehicles((prev) => prev.filter((v) => v.id !== id));
-  }, []);
-
-  const resetToMock = useCallback(() => {
-    setVehicles(mockVehicles);
-    localStorage.removeItem(STORAGE_KEY);
-  }, []);
+  const deleteVehicle = async (id: string) => {
+    const { error } = await supabase.from("vehicles").delete().eq("id", id);
+    if (!error) {
+      setVehicles((prev) => prev.filter((v) => v.id !== id));
+    } else {
+      console.error("Error deleting vehicle:", error);
+    }
+  };
 
   return (
     <VehicleContext.Provider
-      value={{ vehicles, isLoaded, addVehicle, updateVehicle, deleteVehicle, resetToMock }}
+      value={{
+        vehicles,
+        isLoaded,
+        addVehicle,
+        updateVehicle,
+        deleteVehicle,
+        refreshVehicles: fetchVehicles,
+      }}
     >
       {children}
     </VehicleContext.Provider>
   );
 }
 
-// ─────────────────────────────────────────────
-// Hook
-// ─────────────────────────────────────────────
 export function useVehicles() {
-  const ctx = useContext(VehicleContext);
-  if (!ctx) throw new Error("useVehicles must be used inside <VehicleProvider>");
-  return ctx;
+  const context = useContext(VehicleContext);
+  if (context === undefined) {
+    throw new Error("useVehicles must be used within a VehicleProvider");
+  }
+  return context;
 }

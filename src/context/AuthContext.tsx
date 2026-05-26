@@ -6,57 +6,55 @@ import {
   useEffect,
   useState,
   ReactNode,
-  useCallback,
 } from "react";
+import { User } from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface AuthContextValue {
-  credentials: {
-    username: string;
-    passwordHash: string; // for simplicity, we'll store plain for now since it's demo before supabase
-    recoveryEmail: string;
-  };
+  user: User | null;
   isLoaded: boolean;
-  updateCredentials: (username: string, passwordHash: string, recoveryEmail: string) => void;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const AUTH_STORAGE_KEY = "pv-admin-settings-v1";
-
-const defaultCredentials = {
-  username: "admin",
-  passwordHash: "12345678", // Plain text until supabase
-  recoveryEmail: "dono@popularveiculos.com.br",
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [credentials, setCredentials] = useState(defaultCredentials);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (raw) {
-        setCredentials(JSON.parse(raw));
-      }
-    } catch {
-      setCredentials(defaultCredentials);
-    } finally {
+    // Check active session
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
       setIsLoaded(true);
-    }
-  }, []);
+    };
 
-  const updateCredentials = useCallback(
-    (username: string, passwordHash: string, recoveryEmail: string) => {
-      const newCreds = { username, passwordHash, recoveryEmail };
-      setCredentials(newCreds);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newCreds));
-    },
-    []
-  );
+    getSession();
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    router.push("/admin/login");
+  };
 
   return (
-    <AuthContext.Provider value={{ credentials, isLoaded, updateCredentials }}>
+    <AuthContext.Provider value={{ user, isLoaded, signOut }}>
       {children}
     </AuthContext.Provider>
   );

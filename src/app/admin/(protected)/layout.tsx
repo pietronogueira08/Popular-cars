@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Home, LayoutDashboard, LogOut, Car, Menu, X, Shield } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuthContext } from "@/context/AuthContext";
 
 const navItems = [
   { href: "/admin/dashboard", icon: LayoutDashboard, label: "Inventário" },
@@ -15,18 +16,27 @@ const navItems = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, isLoaded, signOut } = useAuthContext();
 
+  // Protect admin routes
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const auth = sessionStorage.getItem("pv-admin-auth");
-      if (!auth) router.push("/admin/login");
+    if (isLoaded && !user) {
+      router.push("/admin/login");
     }
-  }, [router]);
+  }, [isLoaded, user, router]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("pv-admin-auth");
-    router.push("/admin/login");
+  const handleLogout = async () => {
+    await signOut();
   };
+
+  // Prevent flash of content before checking auth
+  if (!isLoaded || !user) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#FFD700]/30 border-t-[#FFD700] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -38,7 +48,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div>
             <p className="font-heading font-black text-white text-sm">Popular Veículos</p>
-            <p className="text-[#6B6B6B] text-xs font-body">Painel Admin</p>
+            <p className="text-[#6B6B6B] text-xs font-body truncate max-w-[150px]" title={user?.email || "Painel Admin"}>
+              {user?.email || "Painel Admin"}
+            </p>
           </div>
         </div>
       </div>
