@@ -2,7 +2,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { TrustSection } from "@/components/TrustSection";
 import { StatsCounter } from "@/components/StatsCounter";
 import { VehicleGrid } from "@/components/VehicleGrid";
-import { TestimonialCarousel } from "@/components/TestimonialCarousel";
+import { TestimonialSection } from "@/components/TestimonialSection";
 import { TradeInValuation } from "@/components/TradeInValuation";
 import { Footer } from "@/components/Footer";
 import type { Metadata } from "next";
@@ -21,7 +21,7 @@ export default function HomePage() {
       <StatsCounter />
       <VehicleGrid />
       <TradeInValuation />
-      <TestimonialCarousel />
+      <TestimonialSection />
       <Footer />
     </main>
   );

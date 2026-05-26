@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Home, LayoutDashboard, LogOut, Car, Menu, X, Shield } from "lucide-react";
+import { Home, LayoutDashboard, LogOut, Car, Menu, X, Shield, MessageSquareQuote } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuthContext } from "@/context/AuthContext";
 
@@ -81,6 +81,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         >
           <Car className="w-5 h-5 flex-shrink-0" />
           Estoque
+        </Link>
+        <Link
+          href="/admin/dashboard/depoimentos"
+          onClick={() => setSidebarOpen(false)}
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-[#E0E0E0] hover:bg-[#1A1A1A] hover:text-[#FFD700] transition-all font-body text-sm"
+        >
+          <MessageSquareQuote className="w-5 h-5 flex-shrink-0" />
+          Depoimentos
         </Link>
         <Link
           href="/admin/settings"
