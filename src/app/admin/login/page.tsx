@@ -23,6 +23,12 @@ export default function AdminLoginPage() {
   useEffect(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    console.log("=== DIAGNÓSTICO SUPABASE ===");
+    console.log("URL Configurada:", url || "NÃO ENCONTRADA");
+    console.log("Chave configurada?", key ? `SIM (Começa com: ${key.substring(0, 15)}...)` : "NÃO");
+    console.log("============================");
+
     if (!url || !key || url.includes("placeholder") || key.includes("placeholder")) {
       setEnvWarning(
         "Variáveis de ambiente do Supabase não configuradas no Vercel. Certifique-se de adicionar NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY (ou NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) nas configurações do seu projeto Vercel."
