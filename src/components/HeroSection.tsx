@@ -74,6 +74,7 @@ export function HeroSection() {
 
   return (
     <section
+      id="hero"
       ref={heroRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       aria-label="Hero — Popular Veículos"
@@ -118,6 +119,7 @@ export function HeroSection() {
                 src="/logo.png" 
                 alt="Popular Veículos" 
                 fill 
+                sizes="192px"
                 className="object-contain object-left drop-shadow-[0_0_15px_rgba(255,215,0,0.3)]"
               />
             </div>

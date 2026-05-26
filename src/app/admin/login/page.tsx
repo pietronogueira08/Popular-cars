@@ -4,9 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, LogIn } from "lucide-react";
+import { useAuthContext } from "@/context/AuthContext";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { credentials, isLoaded } = useAuthContext();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -15,20 +18,27 @@ export default function AdminLoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!isLoaded) return;
+
     setIsLoading(true);
 
-    // Demo: aceita qualquer senha não vazia
+    // Simulate network delay
     await new Promise((r) => setTimeout(r, 800));
 
-    if (!password.trim()) {
-      setError("Por favor, insira uma senha.");
+    if (!username.trim() || !password.trim()) {
+      setError("Por favor, preencha todos os campos.");
       setIsLoading(false);
       return;
     }
 
-    // Salva sessão demo no sessionStorage
-    sessionStorage.setItem("pv-admin-auth", "true");
-    router.push("/admin/dashboard");
+    if (username === credentials.username && password === credentials.passwordHash) {
+      sessionStorage.setItem("pv-admin-auth", "true");
+      router.push("/admin/dashboard");
+    } else {
+      setError("Usuário ou senha incorretos.");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -61,6 +71,19 @@ export default function AdminLoginPage() {
           <form id="admin-login-form" onSubmit={handleLogin} className="space-y-5">
             <div>
               <label className="text-[#6B6B6B] text-xs font-body mb-2 block uppercase tracking-wider">
+                Usuário
+              </label>
+              <input
+                id="admin-username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Ex: admin"
+              />
+            </div>
+
+            <div>
+              <label className="text-[#6B6B6B] text-xs font-body mb-2 block uppercase tracking-wider">
                 Senha de Acesso
               </label>
               <div className="relative">
@@ -69,7 +92,7 @@ export default function AdminLoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Digite qualquer senha (demo)"
+                  placeholder="Sua senha"
                   className="pr-12"
                 />
                 <button
@@ -99,7 +122,7 @@ export default function AdminLoginPage() {
             <motion.button
               id="admin-login-submit"
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !isLoaded}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full flex items-center justify-center gap-2 bg-[#FFD700] text-[#0A0A0A] font-heading font-bold py-3.5 rounded-xl transition-all hover:bg-[#E6C200] disabled:opacity-60 shadow-[0_4px_20px_rgba(255,215,0,0.3)]"
@@ -114,14 +137,9 @@ export default function AdminLoginPage() {
               )}
             </motion.button>
           </form>
-
-          <div className="mt-6 p-3 bg-[#0A0A0A] rounded-lg border border-[#2A2A2A]">
-            <p className="text-[#6B6B6B] text-xs font-body text-center">
-              🔒 Modo Demo — Qualquer senha é aceita
-            </p>
-          </div>
         </div>
       </motion.div>
     </div>
   );
 }
+

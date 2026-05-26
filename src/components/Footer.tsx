@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="bg-[#141414] border-t border-[#2A2A2A] pt-16 pb-8">
+    <footer id="contato" className="bg-[#141414] border-t border-[#2A2A2A] pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
           {/* Brand */}
@@ -14,6 +14,7 @@ export function Footer() {
                   src="/logo.png" 
                   alt="Popular Veículos" 
                   fill 
+                  sizes="160px"
                   className="object-contain object-left drop-shadow-[0_0_15px_rgba(255,215,0,0.3)]"
                 />
               </div>

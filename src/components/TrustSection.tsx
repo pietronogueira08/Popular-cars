@@ -61,6 +61,7 @@ export function TrustSection() {
 
   return (
     <section
+      id="sobre"
       ref={sectionRef}
       className="py-24 bg-[#0A0A0A] relative overflow-hidden"
       aria-labelledby="trust-heading"

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlidersHorizontal, X } from "lucide-react";
 import { VehicleCard, VehicleCardSkeleton } from "@/components/VehicleCard";
-import { vehicles, getVehiclesByCategory } from "@/lib/vehicles";
+import { useVehicles } from "@/context/VehicleContext";
 import type { VehicleCategory } from "@/types/vehicle";
+
 
 type FilterType = "todos" | VehicleCategory;
 
@@ -25,26 +26,23 @@ const priceRanges = [
 ];
 
 export function VehicleGrid() {
+  const { vehicles, isLoaded } = useVehicles();
   const [activeFilter, setActiveFilter] = useState<FilterType>("todos");
   const [priceRange, setPriceRange] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Simulate loading
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
-  }, []);
+  const isLoading = !isLoaded || filterLoading;
 
   const selectedPrice = priceRanges[priceRange];
-  const filtered = getVehiclesByCategory(activeFilter).filter(
-    (v) => v.price >= selectedPrice.min && v.price <= selectedPrice.max
-  );
+  const filtered = vehicles
+    .filter((v) => activeFilter === "todos" || v.category === activeFilter)
+    .filter((v) => v.price >= selectedPrice.min && v.price <= selectedPrice.max);
 
   const handleFilterChange = (f: FilterType) => {
-    setIsLoading(true);
+    setFilterLoading(true);
     setActiveFilter(f);
-    setTimeout(() => setIsLoading(false), 400);
+    setTimeout(() => setFilterLoading(false), 300);
   };
 
   return (

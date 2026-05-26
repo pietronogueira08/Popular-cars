@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Montserrat, Inter } from "next/font/google";
 import "./globals.css";
+import { VehicleProvider } from "@/context/VehicleContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -85,8 +87,11 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[#0A0A0A] text-[#E0E0E0] font-body antialiased">
-        {children}
+        <AuthProvider>
+          <VehicleProvider>{children}</VehicleProvider>
+        </AuthProvider>
       </body>
     </html>
   );
 }
+

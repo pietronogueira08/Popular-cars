@@ -7,9 +7,16 @@ export const buildWhatsAppUrl = (vehicle?: Vehicle): string => {
     const message = encodeURIComponent('Olá! Gostaria de saber mais sobre os veículos da Popular Veículos.')
     return `${base}?text=${message}`
   }
-  const vehicleName = `${vehicle.brand} ${vehicle.model} ${vehicle.year}`
+  const vehicleName = `${vehicle.brand} ${vehicle.model}`
+  const priceFormatted = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(vehicle.price)
+
   const message = encodeURIComponent(
-    `Olá, tenho interesse no ${vehicleName} que vi no site! Poderia me passar mais informações?`
+    `Olá, tenho interesse no ${vehicleName} ano ${vehicle.year} por ${priceFormatted} que vi no site!`
   )
   return `${base}?text=${message}`
 }

@@ -32,7 +32,7 @@ export const vehicles: Vehicle[] = [
     category: 'moto',
     status: 'disponivel',
     description: 'A lendária Africa Twin em excelente estado, com todas as revisões em dia.',
-    image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3c87?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     features: ['DCT', 'Controle de Tração', 'ABS', 'Modos de Condução', 'GPS Integrado'],
     highlighted: true,
     color: 'Tricolor',

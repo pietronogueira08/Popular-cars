@@ -93,6 +93,7 @@ export function TestimonialCarousel() {
 
   return (
     <section
+      id="depoimentos"
       className="py-24 bg-[#0A0A0A] relative"
       aria-labelledby="testimonials-heading"
     >
