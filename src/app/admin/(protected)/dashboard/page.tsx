@@ -44,7 +44,7 @@ const categoryLabels: Record<VehicleCategory, string> = {
   tuning: "Tuning",
 };
 
-const MAX_FILE_SIZE_MB = 2;
+const MAX_FILE_SIZE_MB = 5;
 
 // Convert File → base64 data URL
 function readFileAsDataURL(file: File): Promise<string> {
