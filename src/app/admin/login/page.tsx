@@ -17,6 +17,18 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [envWarning, setEnvWarning] = useState("");
+
+  // Check if Supabase keys are configured
+  useEffect(() => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key || url.includes("placeholder") || key.includes("placeholder")) {
+      setEnvWarning(
+        "Variáveis de ambiente do Supabase não configuradas no Vercel. Certifique-se de adicionar NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY (ou NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) nas configurações do seu projeto Vercel."
+      );
+    }
+  }, []);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -39,19 +51,28 @@ export default function AdminLoginPage() {
       return;
     }
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (signInError) {
-      setError(signInError.message === "Invalid login credentials" 
-        ? "E-mail ou senha incorretos." 
-        : signInError.message);
+      if (signInError) {
+        setError(signInError.message === "Invalid login credentials" 
+          ? "E-mail ou senha incorretos." 
+          : signInError.message);
+        setIsLoading(false);
+      } else {
+        // The auth listener in AuthContext will detect the session change
+        router.push("/admin/dashboard");
+      }
+    } catch (err: any) {
+      console.error("Erro na autenticação:", err);
+      setError(
+        err?.message || 
+        "Erro ao conectar com o servidor de autenticação. Verifique se as credenciais do Supabase no Vercel estão corretas."
+      );
       setIsLoading(false);
-    } else {
-      // The auth listener in AuthContext will detect the session change
-      router.push("/admin/dashboard");
     }
   };
 
@@ -91,6 +112,16 @@ export default function AdminLoginPage() {
 
           {/* Form */}
           <form id="admin-login-form" onSubmit={handleLogin} className="space-y-5">
+            {envWarning && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-[#FFD700] text-xs font-body bg-[#FFD700]/10 border border-[#FFD700]/20 rounded-lg p-3 leading-relaxed"
+              >
+                ⚠️ <strong>Atenção:</strong> {envWarning}
+              </motion.div>
+            )}
+
             <div>
               <label className="text-[#6B6B6B] text-xs font-body mb-2 block uppercase tracking-wider">
                 E-mail de Acesso
