@@ -16,7 +16,7 @@ export const buildWhatsAppUrl = (vehicle?: Vehicle): string => {
   }).format(vehicle.price)
 
   const message = encodeURIComponent(
-    `Olá, tenho interesse no ${vehicleName} ano ${vehicle.year} por ${priceFormatted} que vi no site!`
+    `Olá, me interessei pelo ${vehicleName} ${vehicle.year}`
   )
   return `${base}?text=${message}`
 }

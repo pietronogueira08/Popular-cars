@@ -81,7 +81,7 @@ export function HeroSection() {
       {/* ── Cinematic Background ── */}
       <div ref={bgRef} className="absolute inset-0 scale-110">
         <Image
-          src="/hero-car.jpg"
+          src="/hero-bg.jpeg"
           alt="Veículo premium Popular Veículos"
           fill
           priority

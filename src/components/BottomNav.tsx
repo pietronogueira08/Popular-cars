@@ -2,9 +2,12 @@
 
 import { Home, Car, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 export function BottomNav() {
   const [activeTab, setActiveTab] = useState("home");
+  const pathname = usePathname();
+  const router = useRouter();
 
   // A minimal way to detect current view / scroll position
   useEffect(() => {
@@ -25,10 +28,18 @@ export function BottomNav() {
 
   const scrollTo = (id: string, tab: string) => {
     setActiveTab(tab);
-    if (id === "top") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    if (pathname !== "/") {
+      if (id === "top") {
+        router.push("/#hero");
+      } else {
+        router.push(`/#${id}`);
+      }
     } else {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      if (id === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
@@ -58,7 +69,7 @@ export function BottomNav() {
         </button>
 
         <a
-          href="https://wa.me/5511999999999"
+          href="https://wa.me/5522999822842"
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-col items-center justify-center min-h-[44px] min-w-[64px] text-[#6B6B6B] hover:text-[#FFD700] transition-colors"

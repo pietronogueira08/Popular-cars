@@ -1,4 +1,4 @@
-export type VehicleCategory = 'carro' | 'moto' | 'tuning'
+export type VehicleCategory = 'suv' | 'hatch' | 'sedan' | 'moto' | 'utilitario' | 'picape' | 'tuning'
 export type VehicleStatus = 'disponivel' | 'reservado' | 'vendido'
 
 export interface Vehicle {
@@ -13,7 +13,8 @@ export interface Vehicle {
   status: VehicleStatus
   description: string
   stage?: string
-  image: string
+  image: string        // foto principal (compatibilidade)
+  images?: string[]    // até 8 fotos
   features: string[]
   highlighted?: boolean
   color?: string

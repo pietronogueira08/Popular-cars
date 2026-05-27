@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 import { createClient } from "@/utils/supabase/client";
@@ -105,8 +106,14 @@ export default function AdminLoginPage() {
         <div className="bg-[#141414] rounded-2xl p-8 border border-[#2A2A2A] shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
           {/* Logo */}
           <div className="flex flex-col items-center mb-10">
-            <div className="w-16 h-16 rounded-full bg-[#FFD700] flex items-center justify-center font-heading font-black text-[#0A0A0A] text-2xl mb-4 shadow-[0_0_30px_rgba(255,215,0,0.3)]">
-              PV
+            <div className="relative w-16 h-16 rounded-full overflow-hidden mb-4 border border-[#FFD700]/30 shadow-[0_0_30px_rgba(255,215,0,0.25)]">
+              <Image
+                src="/logo-pv.png"
+                alt="PV Logo"
+                fill
+                sizes="64px"
+                className="object-cover"
+              />
             </div>
             <h1 className="font-heading font-black text-white text-2xl">
               Painel Admin

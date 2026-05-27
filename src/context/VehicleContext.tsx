@@ -9,6 +9,7 @@ import {
 } from "react";
 import { Vehicle } from "@/types/vehicle";
 import { createClient } from "@/utils/supabase/client";
+import { vehicles as localVehicles } from "@/lib/vehicles";
 
 interface VehicleContextType {
   vehicles: Vehicle[];
@@ -32,8 +33,11 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
+    if (!error && data && data.length > 0) {
       setVehicles(data as Vehicle[]);
+    } else {
+      // fallback to local vehicles when Supabase is empty or unavailable
+      setVehicles(localVehicles);
     }
     setIsLoaded(true);
   };
@@ -52,7 +56,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
     if (!error && data) {
       setVehicles((prev) => [data as Vehicle, ...prev]);
     } else {
-      console.error("Error adding vehicle:", error);
+      console.error("Error adding vehicle:", JSON.stringify(error, null, 2));
     }
   };
 
@@ -67,7 +71,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
     if (!error && data) {
       setVehicles((prev) => prev.map((v) => (v.id === id ? (data as Vehicle) : v)));
     } else {
-      console.error("Error updating vehicle:", error);
+      console.error("Error updating vehicle:", JSON.stringify(error, null, 2));
     }
   };
 
@@ -76,7 +80,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
     if (!error) {
       setVehicles((prev) => prev.filter((v) => v.id !== id));
     } else {
-      console.error("Error deleting vehicle:", error);
+      console.error("Error deleting vehicle:", JSON.stringify(error, null, 2));
     }
   };
 
