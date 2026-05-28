@@ -33,7 +33,7 @@ CREATE POLICY "Allow authenticated delete to vehicles" ON vehicles FOR DELETE TO
 INSERT INTO storage.buckets (id, name, public) VALUES ('vehicle-images', 'vehicle-images', true) ON CONFLICT (id) DO NOTHING;
 
 -- 5. Políticas do Storage
-CREATE POLICY "Public Access" ON storage.objects FOR SELECT TO public USING (bucket_id = 'vehicle-images');
-CREATE POLICY "Auth Insert" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'vehicle-images');
-CREATE POLICY "Auth Update" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'vehicle-images');
-CREATE POLICY "Auth Delete" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'vehicle-images');
+CREATE POLICY "Public Access to vehicle-images" ON storage.objects FOR SELECT TO public USING (bucket_id = 'vehicle-images');
+CREATE POLICY "Auth Insert to vehicle-images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'vehicle-images');
+CREATE POLICY "Auth Update to vehicle-images" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'vehicle-images');
+CREATE POLICY "Auth Delete to vehicle-images" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'vehicle-images');
