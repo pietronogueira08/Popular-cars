@@ -243,6 +243,7 @@ export default function AdminDashboardPage() {
   const [featuresInput, setFeaturesInput] = useState("");
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const filtered = vehicleList.filter(
     (v) =>
@@ -257,6 +258,7 @@ export default function AdminDashboardPage() {
     setFeaturesInput("");
     setModalOpen(true);
     setSaved(false);
+    setError(null);
   };
 
   const openEdit = (v: Vehicle) => {
@@ -282,72 +284,86 @@ export default function AdminDashboardPage() {
     setImageFiles([]);
     setModalOpen(true);
     setSaved(false);
+    setError(null);
   };
 
   const saveVehicle = async () => {
+    setError(null);
+    if (!formData.brand.trim() || !formData.model.trim()) {
+      setError("Por favor, preencha a Marca e o Modelo do veículo.");
+      return;
+    }
+
     setSaving(true);
-    const features = featuresInput
-      .split(",")
-      .map((f) => f.trim())
-      .filter(Boolean);
+    try {
+      const features = featuresInput
+        .split(",")
+        .map((f) => f.trim())
+        .filter(Boolean);
 
-    const slug = `${formData.brand}-${formData.model}-${formData.year}`
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
+      const slug = `${formData.brand}-${formData.model}-${formData.year}`
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
 
-    const supabase = createClient();
-    const currentImages = formData.images ?? [];
-    const uploadedImages: string[] = [];
+      const supabase = createClient();
+      const currentImages = formData.images ?? [];
+      const uploadedImages: string[] = [];
 
-    // Upload each image that is a File
-    for (let i = 0; i < currentImages.length; i++) {
-      const img = currentImages[i];
-      const file = imageFiles[i];
+      // Upload each image that is a File
+      for (let i = 0; i < currentImages.length; i++) {
+        const img = currentImages[i];
+        const file = imageFiles[i];
 
-      if (file && img?.startsWith("data:")) {
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
-        const { error: uploadError } = await supabase.storage
-          .from("vehicle-images")
-          .upload(fileName, file);
-
-        if (!uploadError) {
-          const { data } = supabase.storage
+        if (file && img?.startsWith("data:")) {
+          const fileExt = file.name.split(".").pop();
+          const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+          const { error: uploadError } = await supabase.storage
             .from("vehicle-images")
-            .getPublicUrl(fileName);
-          uploadedImages.push(data.publicUrl);
+            .upload(fileName, file);
+
+          if (!uploadError) {
+            const { data } = supabase.storage
+              .from("vehicle-images")
+              .getPublicUrl(fileName);
+            uploadedImages.push(data.publicUrl);
+          } else {
+            console.error("Storage upload error:", uploadError);
+            throw new Error(`Falha ao subir a foto ${i + 1}: ${uploadError.message}`);
+          }
         } else {
-          uploadedImages.push(img); // keep data URL as fallback
+          uploadedImages.push(img);
         }
-      } else {
-        uploadedImages.push(img);
       }
+
+      const finalImages = uploadedImages.filter(Boolean);
+      const mainImage = finalImages[0] ?? formData.image ?? "";
+
+      const vehiclePayload = {
+        ...formData,
+        features,
+        slug,
+        image: mainImage,
+        images: finalImages,
+      };
+
+      if (editingVehicle) {
+        await updateVehicle(editingVehicle.id, vehiclePayload);
+      } else {
+        await addVehicle(vehiclePayload);
+      }
+
+      setSaving(false);
+      setSaved(true);
+      setTimeout(() => {
+        setModalOpen(false);
+        setSaved(false);
+      }, 800);
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message || "Ocorreu um erro ao salvar o veículo. Verifique se preencheu todos os dados corretamente.");
+      setSaving(false);
     }
-
-    const finalImages = uploadedImages.filter(Boolean);
-    const mainImage = finalImages[0] ?? formData.image ?? "";
-
-    const vehiclePayload = {
-      ...formData,
-      features,
-      slug,
-      image: mainImage,
-      images: finalImages,
-    };
-
-    if (editingVehicle) {
-      await updateVehicle(editingVehicle.id, vehiclePayload);
-    } else {
-      await addVehicle(vehiclePayload);
-    }
-
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => {
-      setModalOpen(false);
-      setSaved(false);
-    }, 800);
   };
 
   const confirmDelete = (id: string) => setDeleteId(id);
@@ -675,6 +691,12 @@ export default function AdminDashboardPage() {
                   </div>
                   <span className="text-sm font-body text-[#E0E0E0]">Destacar no estoque</span>
                 </label>
+
+                {error && (
+                  <div className="text-red-500 bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 text-xs font-body leading-relaxed text-center">
+                    ⚠️ {error}
+                  </div>
+                )}
 
                 {/* ── Actions ── */}
                 <div className="flex gap-3 pt-2">

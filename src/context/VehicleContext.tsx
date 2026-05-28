@@ -53,10 +53,13 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
       .select()
       .single();
 
-    if (!error && data) {
-      setVehicles((prev) => [data as Vehicle, ...prev]);
-    } else {
+    if (error) {
       console.error("Error adding vehicle:", JSON.stringify(error, null, 2));
+      throw error;
+    }
+
+    if (data) {
+      setVehicles((prev) => [data as Vehicle, ...prev]);
     }
   };
 
@@ -68,10 +71,13 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
       .select()
       .single();
 
-    if (!error && data) {
-      setVehicles((prev) => prev.map((v) => (v.id === id ? (data as Vehicle) : v)));
-    } else {
+    if (error) {
       console.error("Error updating vehicle:", JSON.stringify(error, null, 2));
+      throw error;
+    }
+
+    if (data) {
+      setVehicles((prev) => prev.map((v) => (v.id === id ? (data as Vehicle) : v)));
     }
   };
 
