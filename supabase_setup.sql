@@ -32,7 +32,12 @@ CREATE POLICY "Allow authenticated delete to vehicles" ON vehicles FOR DELETE TO
 -- 4. Cria o Bucket de Imagens (Se não existir)
 INSERT INTO storage.buckets (id, name, public) VALUES ('vehicle-images', 'vehicle-images', true) ON CONFLICT (id) DO NOTHING;
 
--- 5. Políticas do Storage
+-- 5. Políticas do Storage (Removendo antes de criar para evitar conflitos)
+DROP POLICY IF EXISTS "Public Access to vehicle-images" ON storage.objects;
+DROP POLICY IF EXISTS "Auth Insert to vehicle-images" ON storage.objects;
+DROP POLICY IF EXISTS "Auth Update to vehicle-images" ON storage.objects;
+DROP POLICY IF EXISTS "Auth Delete to vehicle-images" ON storage.objects;
+
 CREATE POLICY "Public Access to vehicle-images" ON storage.objects FOR SELECT TO public USING (bucket_id = 'vehicle-images');
 CREATE POLICY "Auth Insert to vehicle-images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'vehicle-images');
 CREATE POLICY "Auth Update to vehicle-images" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'vehicle-images');
